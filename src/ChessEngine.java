@@ -20,16 +20,17 @@ public class ChessEngine implements AutoCloseable {
         processWriter.flush();
     }
 
+
     public String getOutput() throws IOException {
-        StringBuilder builder = new StringBuilder();
-        String line;
-        while ((line = processReader.readLine()) != null) {
-            if("uciok".equals(line) || line.startsWith("bestmove"))
-                break;
-            builder.append(line).append("\n");
+            StringBuilder builder = new StringBuilder();
+            String line;
+            while ((line = processReader.readLine()) != null) {
+                if("readyok".equals(line) || line.startsWith("bestmove"))
+                    break;
+                builder.append(line).append("\n");
+            }
+            return builder.toString();
         }
-        return builder.toString();
-    }
 
     @Override
     public void close() throws IOException {
