@@ -22,15 +22,15 @@ public class Main {
 
             // Iterate over each game
             for(String game : userGames) {
-                // Send the game to the engine
-                engine.sendCommand("position " + game);
-                engine.sendCommand("go depth 20");
-                
-                // Get the engine output
-                String output = engine.getOutput();
+                GameAnalysis analysis = new GameAnalysis(game, engine);
+                analysis.analyzeGame();
 
-                // Logic for checking if there was a significant swing in evaluation
-                // If there was, create a chess puzzle from the game.
+                // Retrieve the analysis data
+                List<String> moveEvaluations = analysis.getMoveEvaluations();
+                List<String> puzzlePositions = analysis.getPuzzlePositions();
+                List<String> puzzlePGNs = analysis.getPuzzlePGNs();
+
+                // Logic for creating puzzles based on these positions.
                 // TODO: implement this logic
             }
         } catch (Exception e) {
