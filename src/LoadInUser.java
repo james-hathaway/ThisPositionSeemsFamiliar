@@ -1,81 +1,40 @@
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.List;
-import java.util.ArrayList;
-import org.json.*;
+import java.util.Scanner;
 
-public class LoadInUser extends Main {
-    private String user;
-    private List<String> loadedGames = new ArrayList<>();
+public class Main {
+    public static void main(String[] args) {
+        // Get the user's username
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter your chess.com username: ");
+        String user = scanner.nextLine();
+        scanner.close();
 
-    public LoadInUser(String user) {
-        this.user = user;
-    }
+        // Load in the user's games
+        LoadInUser loadInUser = new LoadInUser(user);
+        loadInUser.loadUserGames();
 
-    public void loadUserGames() {
-        String url = "https://api.chess.com/pub/player/" + user + "/games/archives";
+        // Get the list of user games in PGN format
+        List<String> userGames = loadInUser.getLoadedGames();
 
-        try {
-            String response = getHttpResponse(url);
+        // Start the chess engine
+        try (ChessEngine engine = new ChessEngine("/path/to/stockfish")) { // provide the path to your stockfish binary
+            engine.sendCommand("uci");
 
-            // Get the last month's games URL using regular expression
-            Pattern pattern = Pattern
-                    .compile("https://api\\.chess\\.com/pub/player/" + user + "/games/(\\d{4}/\\d{2})");
-            Matcher matcher = pattern.matcher(response);
-            String lastMonthUrl = null;
-            while (matcher.find()) {
-                lastMonthUrl = matcher.group();
+            // Iterate over each game
+            for (String game : userGames) {
+                // Send the game to the engine
+                engine.sendCommand("position " + game);
+                engine.sendCommand("go depth 20");
+
+                // Get the engine output
+                String output = engine.getOutput();
+
+                // Logic for checking if there was a significant swing in evaluation
+                // If there was, create a chess puzzle from the game.
+                // TODO: implement this logic
             }
-
-            // Fetch the games from the last month
-            if (lastMonthUrl != null) {
-                String gameResponse = getHttpResponse(lastMonthUrl);
-
-                // parse the JSON response
-                JSONObject jsonObject = new JSONObject(gameResponse);
-                JSONArray games = jsonObject.getJSONArray("games");
-
-                // convert each game to PGN format and store it in the list
-                for (int i = 0; i < games.length(); i++) {
-                    JSONObject game = games.getJSONObject(i);
-                    String fullPgn = game.getString("pgn");
-
-                    // remove metadata and keep only moves
-                    String movesOnlyPgn = fullPgn.replaceAll("\\[.*?\\]\\s*", "").replaceAll("1-0|0-1|1/2-1/2", "")
-                            .trim();
-                    loadedGames.add(movesOnlyPgn);
-                }
-            } else {
-                System.out.println("No games found for the last month.");
-            }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public List<String> getLoadedGames() {
-        return loadedGames;
-    }
-
-    private String getHttpResponse(String url) throws IOException {
-        URL obj = new URL(url);
-        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-        con.setRequestMethod("GET");
-
-        StringBuilder response = new StringBuilder();
-        try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
-            String inputLine;
-
-            while ((inputLine = in.readLine()) != null) {
-                response.append(inputLine);
-            }
-        }
-        return response.toString();
     }
 }
