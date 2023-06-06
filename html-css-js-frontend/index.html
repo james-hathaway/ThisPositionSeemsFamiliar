@@ -1,1 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess Puzzles</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <nav>
+        <div class="logo">This Position Seems Familiar</div>
+        <div class="nav-items">
+            <a href="#" id="instructions-button">Instructions</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-container">
+            <div class="column-center">
+                <h1>Create Chess Puzzles that Feel Real!</h1>
+                <form id="username-form" class="form">
+                    <label for="username-input">Enter your chess.com username:</label>
+                    <input type="text" id="username-input" placeholder="e.g., kasparov" class="form-input">
+                    <button type="submit" class="form-button">Generate Puzzles</button>
+                </form>
+            </div>
+            <div class="column-right">
+                <img src="chessyea.png" alt="Chess Illustration" class="hero-illustration">
+            </div>
+        </div>
+    </section>
+
+    <section class="puzzles" id="puzzles-section">
+        <div class="puzzles-container">
+            <div class="puzzle-list" id="puzzle-list">
+                <!-- Dynamically generated puzzle items will be added here -->
+            </div>
+
+        </div>
+    </section>
+
+    <div id="instructions-modal" class="modal">
+        <div class="modal-content">
+            <h2 class="section-title">Instructions</h2>
+            <span id="close-button" class="close-button">&times;</span>
+            <ol>
+                <li>Enter your chess.com username in the form above and click "Generate Puzzles".</li>
+                <li>The system will analyze your recent games and generate chess puzzles for you.</li>
+                <li>Each puzzle represents a critical position in one of your games.</li>
+                <li>Solve the puzzles by finding the best move for the given position.</li>
+                <li>Improve your chess skills and have fun!</li>
+            </ol>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
